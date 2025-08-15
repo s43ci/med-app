@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستعرض العلاجات الطبية</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1><i class="fas fa-prescription-bottle-alt"></i> مستعرض العلاجات الطبية</h1>
+            <button id="addCategoryBtn" class="btn primary">
+                <i class="fas fa-folder-plus"></i> إضافة قسم جديد
+            </button>
+        </header>
+
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث عن علاج...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div id="categoriesList" class="categories-list">
+                <!-- سيتم ملؤها بالجافاسكريبت -->
+            </div>
+        </div>
+
+        <main class="content-area">
+            <div id="welcomeScreen" class="welcome-screen">
+                <div class="welcome-content">
+                    <i class="fas fa-heartbeat"></i>
+                    <h2>مرحبًا بك في مستعرض العلاجات الطبية</h2>
+                    <p>اختر قسمًا من القائمة الجانبية أو أضف قسمًا جديدًا لبدء إدارة العلاجات</p>
+                </div>
+            </div>
+
+            <div id="categoryContent" class="category-content" style="display: none;">
+                <div class="category-header">
+                    <h2 id="currentCategoryTitle"></h2>
+                    <button id="addMedicineBtn" class="btn primary">
+                        <i class="fas fa-plus-circle"></i> إضافة علاج جديد
+                    </button>
+                </div>
+
+                <div id="medicinesList" class="medicines-list">
+                    <!-- سيتم ملؤها بالجافاسكريبت -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة إضافة/تعديل قسم -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="categoryModalTitle">إضافة قسم جديد</h2>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label for="categoryName">اسم القسم:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <button type="submit" class="btn primary">حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة/تعديل علاج -->
+    <div id="medicineModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="medicineModalTitle">إضافة علاج جديد</h2>
+            <form id="medicineForm">
+                <input type="hidden" id="medicineId">
+                <input type="hidden" id="medicineCategoryId">
+                
+                <div class="form-group">
+                    <label for="medicineTradeName">الاسم التجاري:</label>
+                    <input type="text" id="medicineTradeName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineScientificName">المادة العلمية:</label>
+                    <input type="text" id="medicineScientificName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineSpecs">المواصفات:</label>
+                    <textarea id="medicineSpecs" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineContraindications">الموانع:</label>
+                    <textarea id="medicineContraindications" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineDosage">الدُز (الجرعة):</label>
+                    <input type="text" id="medicineDosage" placeholder="مثال: مرتين يوميًا">
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineNotes">ملاحظات:</label>
+                    <textarea id="medicineNotes" rows="2"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineImage">صورة العلاج:</label>
+                    <input type="file" id="medicineImage" accept="image/*">
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                
+                <button type="submit" class="btn primary">حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
