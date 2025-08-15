@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navBtns = document.querySelectorAll('.nav-btn');
     const sections = document.querySelectorAll('.content-section');
 
-    // ===== قسم العلاجات =====
+    // ===== قسم المجموعات والأقسام والأدوية =====
     const addGroupBtn = document.getElementById('addGroupBtn');
     const addCategoryBtn = document.getElementById('addCategoryBtn');
     const addMedicineBtn = document.getElementById('addMedicineBtn');
@@ -18,16 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const medicineForm = document.getElementById('medicineForm');
 
     const groupsList = document.querySelector('.groups-list');
-    const categoriesList = document.querySelector('.categories-list');
+    const categoriesSelect = document.getElementById('categoryGroupSelect');
     const medicinesList = document.getElementById('medicinesList');
 
-    const medicinesWelcome = document.getElementById('medicinesWelcome');
-    const medicinesContent = document.getElementById('medicinesContent');
-
     const medicinesSearch = document.getElementById('medicinesSearch');
-
     const currentCategoryTitle = document.getElementById('currentCategoryTitle');
-    const currentGroupTitle = document.getElementById('currentGroupTitle');
 
     const medicineImageInput = document.getElementById('medicineImage');
     const imagePreview = document.getElementById('imagePreview');
@@ -43,11 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const diseaseCategoryForm = document.getElementById('diseaseCategoryForm');
     const diseaseForm = document.getElementById('diseaseForm');
 
-    const diseasesCategoriesList = document.querySelector('.disease-categories-list');
+    const diseasesCategoriesList = document.querySelector('.categories-list');
     const diseasesList = document.getElementById('diseasesList');
-
-    const diseasesWelcome = document.getElementById('diseasesWelcome');
-    const diseasesContent = document.getElementById('diseasesContent');
 
     const diseasesSearch = document.getElementById('diseasesSearch');
     const currentDiseaseCategoryTitle = document.getElementById('currentDiseaseCategoryTitle');
@@ -62,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // بيانات التطبيق
     let appData = JSON.parse(localStorage.getItem('medicalAppData')) || {
         groups: [],
-        diseaseCategories: [],
+        diseasesCategories: [],
         settings: { theme: 'light' }
     };
 
@@ -70,280 +62,254 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGroupId = null;
     let currentCategoryId = null;
     let currentDiseaseCategoryId = null;
+    let isEditing = false;
+    let currentEditingId = null;
 
     // ===== التخزين =====
-    function saveData() { localStorage.setItem('medicalAppData', JSON.stringify(appData)); }
+    function saveData() {
+        localStorage.setItem('medicalAppData', JSON.stringify(appData));
+    }
 
-    // ===== السمات =====
+    // ===== الثيم =====
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         appData.settings.theme = theme;
         toggleThemeBtn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         saveData();
     }
+    applyTheme(appData.settings.theme);
 
     toggleThemeBtn.addEventListener('click', () => {
         applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     });
 
-    // ===== التنقل =====
+    // ===== التنقل بين الأقسام =====
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            currentSection = btn.dataset.section;
-            sections.forEach(s => s.classList.toggle('active', s.id === currentSection + 'Section'));
-            navBtns.forEach(b => b.classList.toggle('active', b.dataset.section === currentSection));
+            const section = btn.dataset.section;
+            currentSection = section;
+            sections.forEach(s => s.classList.toggle('active', s.id === section + 'Section'));
+            navBtns.forEach(b => b.classList.toggle('active', b.dataset.section === section));
         });
     });
 
-    // ===== النوافذ المنبثقة =====
-    closeButtons.forEach(btn => btn.addEventListener('click', () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none')));
-    function openModal(modal) { modal.style.display = 'block'; }
-    function closeModal(modal) { modal.style.display = 'none'; }
-
-    addGroupBtn.addEventListener('click', () => openModal(groupModal));
-    addCategoryBtn.addEventListener('click', () => { populateGroupSelect(); openModal(categoryModal); });
-    addMedicineBtn.addEventListener('click', () => {
-        if (!currentGroupId || !currentCategoryId) { alert("اختر مجموعة وقسم أولاً!"); return; }
-        openModal(medicineModal);
+    // ===== إدارة المودالات =====
+    function openModal(modal) {
+        modal.style.display = 'flex';
+    }
+    function closeModal(modal) {
+        modal.style.display = 'none';
+        resetForms();
+    }
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            closeModal(btn.closest('.modal'));
+        });
     });
 
-    addDiseaseCategoryBtn.addEventListener('click', () => openModal(diseaseCategoryModal));
-    addDiseaseBtn.addEventListener('click', () => {
-        if (!currentDiseaseCategoryId) { alert("اختر قسم المرض أولاً!"); return; }
-        openModal(diseaseModal);
-    });
+    function resetForms() {
+        groupForm.reset();
+        categoryForm.reset();
+        medicineForm.reset();
+        diseaseCategoryForm.reset();
+        diseaseForm.reset();
+        imagePreview.src = '';
+        fileNameSpan.textContent = '';
+        diseaseImagePreview.src = '';
+        diseaseFileNameSpan.textContent = '';
+        isEditing = false;
+        currentEditingId = null;
+    }
 
-    // ===== إدارة المجموعات والأقسام =====
+    // ===== CRUD المجموعات =====
     function renderGroups() {
         groupsList.innerHTML = '';
         appData.groups.forEach(group => {
             const li = document.createElement('li');
             li.textContent = group.name;
+            li.dataset.id = group.id;
             li.addEventListener('click', () => {
                 currentGroupId = group.id;
-                currentCategoryId = null;
-                renderCategories(group.id);
-                currentGroupTitle.textContent = group.name;
+                renderCategories();
             });
             groupsList.appendChild(li);
         });
+        populateCategorySelect();
     }
 
-    function renderCategories(groupId) {
-        const group = appData.groups.find(g => g.id === groupId);
-        categoriesList.innerHTML = '';
-        group.categories.forEach(cat => {
-            const li = document.createElement('li');
-            li.textContent = cat.name;
-            li.addEventListener('click', () => {
-                currentCategoryId = cat.id;
-                currentCategoryTitle.textContent = cat.name;
-                renderMedicines(cat.medicines);
-            });
-            categoriesList.appendChild(li);
-        });
-    }
-
-    function renderMedicines(medicines) {
-        medicinesList.innerHTML = '';
-        if (!medicines || medicines.length === 0) {
-            medicinesWelcome.style.display = 'block';
-            medicinesContent.style.display = 'none';
-            return;
-        }
-        medicinesWelcome.style.display = 'none';
-        medicinesContent.style.display = 'block';
-        medicines.forEach(med => {
-            const div = document.createElement('div');
-            div.classList.add('medicine-item');
-            div.innerHTML = `<h4>${med.name}</h4><p>الجرعة: ${med.dose}</p>${med.image ? `<img src="${med.image}" style="max-width:50px;">` : ''}`;
-            medicinesList.appendChild(div);
-        });
-    }
-
-    function populateGroupSelect() {
-        const select = categoryForm.querySelector('select[name="group"]');
-        select.innerHTML = '';
+    function populateCategorySelect() {
+        categoriesSelect.innerHTML = '';
         appData.groups.forEach(group => {
             const option = document.createElement('option');
             option.value = group.id;
             option.textContent = group.name;
-            select.appendChild(option);
+            categoriesSelect.appendChild(option);
         });
     }
 
-    // ===== الفورمات =====
+    addGroupBtn.addEventListener('click', () => openModal(groupModal));
+
     groupForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = groupForm.name.value.trim();
+        const name = groupForm.groupName.value.trim();
         if (!name) return;
-        const id = Date.now().toString();
-        appData.groups.push({ id, name, categories: [] });
+
+        if (isEditing) {
+            const group = appData.groups.find(g => g.id === currentEditingId);
+            group.name = name;
+        } else {
+            const newGroup = { id: Date.now(), name, categories: [] };
+            appData.groups.push(newGroup);
+        }
         saveData();
         renderGroups();
-        groupForm.reset();
         closeModal(groupModal);
+    });
+
+    // ===== CRUD الأقسام =====
+    addCategoryBtn.addEventListener('click', () => {
+        if (appData.groups.length === 0) {
+            alert('أضف مجموعة أولاً');
+            return;
+        }
+        openModal(categoryModal);
     });
 
     categoryForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = categoryForm.name.value.trim();
-        const groupId = categoryForm.group.value;
-        if (!name || !groupId) return;
+        const name = categoryForm.categoryName.value.trim();
+        const groupId = parseInt(categoryForm.categoryGroup.value);
+        if (!name) return;
+
         const group = appData.groups.find(g => g.id === groupId);
-        const id = Date.now().toString();
-        group.categories.push({ id, name, medicines: [] });
+        if (!group) return;
+
+        if (isEditing) {
+            const category = group.categories.find(c => c.id === currentEditingId);
+            category.name = name;
+        } else {
+            const newCategory = { id: Date.now(), name, medicines: [] };
+            group.categories.push(newCategory);
+        }
         saveData();
-        renderCategories(groupId);
-        categoryForm.reset();
+        renderCategories();
         closeModal(categoryModal);
+    });
+
+    function renderCategories() {
+        const group = appData.groups.find(g => g.id === currentGroupId);
+        if (!group) return;
+        categoriesSelect.innerHTML = '';
+        group.categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = category.name;
+            categoriesSelect.appendChild(option);
+        });
+        currentCategoryTitle.textContent = group.name;
+    }
+
+    // ===== CRUD الأدوية =====
+    addMedicineBtn.addEventListener('click', () => {
+        if (!currentGroupId) {
+            alert('اختر مجموعة أولاً');
+            return;
+        }
+        openModal(medicineModal);
     });
 
     medicineForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = medicineForm.name.value.trim();
-        const dose = medicineForm.dose.value.trim();
-        if (!name || !dose) return;
+        const name = medicineForm.medicineName.value.trim();
+        const categoryId = parseInt(medicineForm.categorySelect.value);
+        if (!name || !categoryId) return;
+
         const group = appData.groups.find(g => g.id === currentGroupId);
-        const category = group.categories.find(c => c.id === currentCategoryId);
-        const id = Date.now().toString();
-        let image = '';
-        if (medicineImageInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                image = reader.result;
-                category.medicines.push({ id, name, dose, image });
-                saveData();
-                renderMedicines(category.medicines);
-                medicineForm.reset();
-                imagePreview.src = '';
-                fileNameSpan.textContent = '';
-                closeModal(medicineModal);
-            };
-            reader.readAsDataURL(medicineImageInput.files[0]);
+        if (!group) return;
+        const category = group.categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        const imageFile = medicineImageInput.files[0];
+        const imageUrl = imageFile ? URL.createObjectURL(imageFile) : '';
+
+        if (isEditing) {
+            const medicine = category.medicines.find(m => m.id === currentEditingId);
+            medicine.name = name;
+            if (imageUrl) medicine.image = imageUrl;
         } else {
-            category.medicines.push({ id, name, dose, image });
-            saveData();
-            renderMedicines(category.medicines);
-            medicineForm.reset();
-            closeModal(medicineModal);
+            const newMedicine = { id: Date.now(), name, image: imageUrl };
+            category.medicines.push(newMedicine);
+        }
+        saveData();
+        renderMedicines();
+        closeModal(medicineModal);
+    });
+
+    function renderMedicines() {
+        medicinesList.innerHTML = '';
+        if (!currentGroupId) return;
+        const group = appData.groups.find(g => g.id === currentGroupId);
+        group.categories.forEach(category => {
+            category.medicines.forEach(med => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                li.innerHTML = `
+                    <span>${med.name}</span>
+                    ${med.image ? `<img src="${med.image}" width="40">` : ''}
+                `;
+                medicinesList.appendChild(li);
+            });
+        });
+    }
+
+    // ===== الصور =====
+    medicineImageInput.addEventListener('change', () => {
+        const file = medicineImageInput.files[0];
+        if (file) {
+            fileNameSpan.textContent = file.name;
+            imagePreview.src = URL.createObjectURL(file);
         }
     });
 
-    medicineImageInput.addEventListener('change', () => {
-        if (medicineImageInput.files.length > 0) {
-            const file = medicineImageInput.files[0];
-            fileNameSpan.textContent = file.name;
-            const reader = new FileReader();
-            reader.onload = () => { imagePreview.src = reader.result; };
-            reader.readAsDataURL(file);
-        } else { fileNameSpan.textContent = ''; imagePreview.src = ''; }
+    diseaseImageInput.addEventListener('change', () => {
+        const file = diseaseImageInput.files[0];
+        if (file) {
+            diseaseFileNameSpan.textContent = file.name;
+            diseaseImagePreview.src = URL.createObjectURL(file);
+        }
     });
 
     // ===== البحث =====
     medicinesSearch.addEventListener('input', () => {
         const query = medicinesSearch.value.toLowerCase();
-        const group = appData.groups.find(g => g.id === currentGroupId);
-        if (!group) return;
-        const category = group.categories.find(c => c.id === currentCategoryId);
-        if (!category) return;
-        const filtered = category.medicines.filter(m => m.name.toLowerCase().includes(query));
-        renderMedicines(filtered);
+        document.querySelectorAll('#medicinesList .list-item').forEach(item => {
+            const text = item.querySelector('span').textContent.toLowerCase();
+            item.style.display = text.includes(query) ? 'flex' : 'none';
+        });
     });
 
-    // ===== أمراض =====
-    function renderDiseaseCategories() {
-        diseasesCategoriesList.innerHTML = '';
-        appData.diseaseCategories.forEach(cat => {
-            const li = document.createElement('li');
-            li.textContent = cat.name;
-            li.addEventListener('click', () => {
-                currentDiseaseCategoryId = cat.id;
-                currentDiseaseCategoryTitle.textContent = cat.name;
-                renderDiseases(cat.diseases);
-            });
-            diseasesCategoriesList.appendChild(li);
-        });
-    }
-
-    function renderDiseases(diseases) {
-        diseasesList.innerHTML = '';
-        if (!diseases || diseases.length === 0) {
-            diseasesWelcome.style.display = 'block';
-            diseasesContent.style.display = 'none';
-            return;
-        }
-        diseasesWelcome.style.display = 'none';
-        diseasesContent.style.display = 'block';
-        diseases.forEach(d => {
-            const div = document.createElement('div');
-            div.classList.add('disease-item');
-            div.innerHTML = `<h4>${d.name}</h4>${d.image ? `<img src="${d.image}" style="max-width:50px;">` : ''}`;
-            diseasesList.appendChild(div);
-        });
-    }
+    // ===== الأمراض وفئاتها (نسخة مبسطة) =====
+    addDiseaseCategoryBtn.addEventListener('click', () => openModal(diseaseCategoryModal));
+    addDiseaseBtn.addEventListener('click', () => openModal(diseaseModal));
 
     diseaseCategoryForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = diseaseCategoryForm.name.value.trim();
+        const name = diseaseCategoryForm.categoryName.value.trim();
         if (!name) return;
-        const id = Date.now().toString();
-        appData.diseaseCategories.push({ id, name, diseases: [] });
+        appData.diseasesCategories.push({ id: Date.now(), name, diseases: [] });
         saveData();
-        renderDiseaseCategories();
-        diseaseCategoryForm.reset();
         closeModal(diseaseCategoryModal);
     });
 
     diseaseForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = diseaseForm.name.value.trim();
+        const name = diseaseForm.diseaseName.value.trim();
         if (!name || !currentDiseaseCategoryId) return;
-        const category = appData.diseaseCategories.find(c => c.id === currentDiseaseCategoryId);
-        const id = Date.now().toString();
-        let image = '';
-        if (diseaseImageInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                image = reader.result;
-                category.diseases.push({ id, name, image });
-                saveData();
-                renderDiseases(category.diseases);
-                diseaseForm.reset();
-                diseaseImagePreview.src = '';
-                diseaseFileNameSpan.textContent = '';
-                closeModal(diseaseModal);
-            };
-            reader.readAsDataURL(diseaseImageInput.files[0]);
-        } else {
-            category.diseases.push({ id, name, image });
-            saveData();
-            renderDiseases(category.diseases);
-            diseaseForm.reset();
-            closeModal(diseaseModal);
-        }
+        const category = appData.diseasesCategories.find(c => c.id === currentDiseaseCategoryId);
+        category.diseases.push({ id: Date.now(), name });
+        saveData();
+        closeModal(diseaseModal);
     });
 
-    diseaseImageInput.addEventListener('change', () => {
-        if (diseaseImageInput.files.length > 0) {
-            const file = diseaseImageInput.files[0];
-            diseaseFileNameSpan.textContent = file.name;
-            const reader = new FileReader();
-            reader.onload = () => { diseaseImagePreview.src = reader.result; };
-            reader.readAsDataURL(file);
-        } else { diseaseFileNameSpan.textContent = ''; diseaseImagePreview.src = ''; }
-    });
-
-    diseasesSearch.addEventListener('input', () => {
-        const query = diseasesSearch.value.toLowerCase();
-        const category = appData.diseaseCategories.find(c => c.id === currentDiseaseCategoryId);
-        if (!category) return;
-        const filtered = category.diseases.filter(d => d.name.toLowerCase().includes(query));
-        renderDiseases(filtered);
-    });
-
-    // ===== تهيئة التطبيق =====
-    applyTheme(appData.settings.theme);
     renderGroups();
-    renderDiseaseCategories();
 });
