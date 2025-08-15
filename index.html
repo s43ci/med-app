@@ -1,145 +1,315 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق إدارة العلاجات والأمراض</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مستعرض العلاجات والأمراض</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body data-theme="light">
-
-    <!-- ======= شريط التنقل ======= -->
-    <nav>
-        <button class="nav-btn active" data-section="medicines">العلاجات</button>
-        <button class="nav-btn" data-section="diseases">الأمراض</button>
-        <button id="toggleTheme"><i class="fas fa-moon"></i></button>
-    </nav>
-
-    <!-- ======= قسم العلاجات ======= -->
-    <section id="medicinesSection" class="content-section active">
-        <div class="header">
-            <h2>العلاجات</h2>
-            <button id="addGroupBtn">إضافة مجموعة</button>
-            <button id="addCategoryBtn">إضافة قسم</button>
-            <button id="addMedicineBtn">إضافة دواء</button>
-        </div>
-
-        <div class="main-content">
-            <aside>
-                <h3>المجموعات</h3>
-                <ul class="groups-list"></ul>
-            </aside>
-
-            <div class="content-area">
-                <input type="text" id="medicinesSearch" placeholder="ابحث عن دواء...">
-                <div id="medicinesWelcome">اختر مجموعة أو قسم لعرض الأدوية</div>
-                <div id="medicinesContent" class="list"></div>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-heartbeat"></i> مستعرض طبي</h1>
+                <div class="header-actions">
+                    <button id="toggleTheme" class="btn icon-btn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
             </div>
+            
+            <nav class="main-nav">
+                <button class="nav-btn active" data-section="medicines">
+                    <i class="fas fa-pills"></i> العلاجات
+                </button>
+                <button class="nav-btn" data-section="diseases">
+                    <i class="fas fa-disease"></i> الأمراض
+                </button>
+            </nav>
+        </header>
+
+        <div class="app-main">
+            <!-- قسم العلاجات -->
+            <section id="medicinesSection" class="content-section active">
+                <div class="sidebar">
+                    <div class="section-actions">
+                        <button id="addGroupBtn" class="btn primary small">
+                            <i class="fas fa-layer-group"></i> مجموعة جديدة
+                        </button>
+                        <button id="addCategoryBtn" class="btn primary small">
+                            <i class="fas fa-folder-plus"></i> قسم جديد
+                        </button>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="medicinesSearch" placeholder="ابحث عن علاج...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <div class="groups-list">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div id="medicinesWelcome" class="welcome-screen">
+                        <div class="welcome-content">
+                            <i class="fas fa-pills"></i>
+                            <h2>قسم العلاجات الطبية</h2>
+                            <p>اختر مجموعة أو قسمًا من القائمة الجانبية لبدء إدارة العلاجات</p>
+                        </div>
+                    </div>
+
+                    <div id="medicinesContent" class="category-content" style="display: none;">
+                        <div class="category-header">
+                            <div>
+                                <h2 id="currentCategoryTitle"></h2>
+                                <p id="currentGroupTitle" class="subtitle"></p>
+                            </div>
+                            <button id="addMedicineBtn" class="btn primary">
+                                <i class="fas fa-plus-circle"></i> إضافة علاج
+                            </button>
+                        </div>
+
+                        <div id="medicinesList" class="cards-grid">
+                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم الأمراض -->
+            <section id="diseasesSection" class="content-section">
+                <div class="sidebar">
+                    <div class="section-actions">
+                        <button id="addDiseaseCategoryBtn" class="btn primary small">
+                            <i class="fas fa-folder-plus"></i> قسم جديد
+                        </button>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="diseasesSearch" placeholder="ابحث عن مرض...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <div class="categories-list">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </div>
+                </div>
+
+                <div class="content-area">
+                    <div id="diseasesWelcome" class="welcome-screen">
+                        <div class="welcome-content">
+                            <i class="fas fa-disease"></i>
+                            <h2>قسم الأمراض الطبية</h2>
+                            <p>اختر قسمًا من القائمة الجانبية لبدء إدارة الأمراض</p>
+                        </div>
+                    </div>
+
+                    <div id="diseasesContent" class="category-content" style="display: none;">
+                        <div class="category-header">
+                            <h2 id="currentDiseaseCategoryTitle"></h2>
+                            <button id="addDiseaseBtn" class="btn primary">
+                                <i class="fas fa-plus-circle"></i> إضافة مرض
+                            </button>
+                        </div>
+
+                        <div id="diseasesList" class="cards-grid">
+                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
+    </div>
 
-    <!-- ======= قسم الأمراض ======= -->
-    <section id="diseasesSection" class="content-section">
-        <div class="header">
-            <h2>الأمراض</h2>
-            <button id="addDiseaseCategoryBtn">إضافة قسم مرض</button>
-            <button id="addDiseaseBtn">إضافة مرض</button>
-        </div>
-
-        <div class="main-content">
-            <aside>
-                <h3>الأقسام</h3>
-                <ul class="categories-list"></ul>
-            </aside>
-
-            <div class="content-area">
-                <input type="text" id="diseasesSearch" placeholder="ابحث عن مرض...">
-                <div id="diseasesWelcome">اختر قسم لعرض الأمراض</div>
-                <div id="diseasesContent" class="list"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ======= النوافذ المنبثقة (Modals) ======= -->
-    <!-- مجموعة العلاجات -->
+    <!-- نوافذ منبثقة للعلاجات -->
     <div id="groupModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>إضافة/تعديل مجموعة</h3>
+            <h2 id="groupModalTitle">إضافة مجموعة جديدة</h2>
             <form id="groupForm">
-                <input type="text" id="groupName" placeholder="اسم المجموعة" required>
-                <button type="submit">حفظ</button>
+                <input type="hidden" id="groupId">
+                <div class="form-group">
+                    <label for="groupName">اسم المجموعة:</label>
+                    <input type="text" id="groupName" required>
+                </div>
+                <button type="submit" class="btn primary">حفظ</button>
             </form>
         </div>
     </div>
 
-    <!-- قسم العلاجات -->
     <div id="categoryModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>إضافة/تعديل قسم</h3>
+            <h2 id="categoryModalTitle">إضافة قسم جديد</h2>
             <form id="categoryForm">
-                <input type="text" id="categoryName" placeholder="اسم القسم" required>
-                <select id="categoryGroupSelect" required>
-                    <option value="">اختر المجموعة</option>
-                </select>
-                <button type="submit">حفظ</button>
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label for="categoryGroup">المجموعة:</label>
+                    <select id="categoryGroup" required>
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categoryName">اسم القسم:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <button type="submit" class="btn primary">حفظ</button>
             </form>
         </div>
     </div>
 
-    <!-- دواء -->
     <div id="medicineModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>إضافة/تعديل دواء</h3>
+            <h2 id="medicineModalTitle">إضافة علاج جديد</h2>
             <form id="medicineForm">
-                <input type="text" id="medicineName" placeholder="اسم الدواء" required>
-                <input type="text" id="medicineGeneric" placeholder="الاسم العلمي" required>
-                <input type="text" id="medicineUses" placeholder="الاستخدامات" required>
-                <input type="text" id="medicineContra" placeholder="الموانع" required>
-                <select id="medicineGroupSelect" required>
-                    <option value="">اختر المجموعة</option>
-                </select>
-                <select id="medicineCategorySelect" required>
-                    <option value="">اختر القسم</option>
-                </select>
-                <input type="file" id="medicineImage" accept="image/*">
-                <span id="fileName"></span>
-                <img id="imagePreview" src="" alt="" style="display:none; max-width:100px;">
-                <button type="submit">حفظ</button>
+                <input type="hidden" id="medicineId">
+                <input type="hidden" id="medicineCategoryId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="medicineTradeName">الاسم التجاري:</label>
+                        <input type="text" id="medicineTradeName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medicineScientificName">المادة العلمية:</label>
+                        <input type="text" id="medicineScientificName" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineSpecs">المواصفات:</label>
+                    <textarea id="medicineSpecs" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineContraindications">الموانع:</label>
+                    <textarea id="medicineContraindications" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="medicineDosage">الجرعة (الدُز):</label>
+                        <input type="text" id="medicineDosage" placeholder="مثال: مرتين يوميًا">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medicineForm">شكل الدواء:</label>
+                        <select id="medicineForm">
+                            <option value="">اختر الشكل</option>
+                            <option value="حبوب">حبوب</option>
+                            <option value="شراب">شراب</option>
+                            <option value="حقن">حقن</option>
+                            <option value="مرهم">مرهم</option>
+                            <option value="تحاميل">تحاميل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineNotes">ملاحظات:</label>
+                    <textarea id="medicineNotes" rows="2" placeholder="ملاحظات مهمة عن العلاج"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicineImage">صورة العلاج:</label>
+                    <div class="file-upload">
+                        <label for="medicineImage" class="upload-btn">
+                            <i class="fas fa-upload"></i> اختر صورة
+                        </label>
+                        <input type="file" id="medicineImage" accept="image/*">
+                        <span id="fileName"></span>
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">حفظ العلاج</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- قسم مرض -->
+    <!-- نوافذ منبثقة للأمراض -->
     <div id="diseaseCategoryModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>إضافة/تعديل قسم مرض</h3>
+            <h2 id="diseaseCategoryModalTitle">إضافة قسم أمراض</h2>
             <form id="diseaseCategoryForm">
-                <input type="text" id="diseaseCategoryName" placeholder="اسم القسم" required>
-                <button type="submit">حفظ</button>
+                <input type="hidden" id="diseaseCategoryId">
+                <div class="form-group">
+                    <label for="diseaseCategoryName">اسم القسم:</label>
+                    <input type="text" id="diseaseCategoryName" required>
+                </div>
+                <button type="submit" class="btn primary">حفظ</button>
             </form>
         </div>
     </div>
 
-    <!-- مرض -->
     <div id="diseaseModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h3>إضافة/تعديل مرض</h3>
+            <h2 id="diseaseModalTitle">إضافة مرض جديد</h2>
             <form id="diseaseForm">
-                <input type="text" id="diseaseName" placeholder="اسم المرض" required>
-                <input type="text" id="diseaseDesc" placeholder="الوصف" required>
-                <select id="diseaseCategorySelect" required>
-                    <option value="">اختر القسم</option>
-                </select>
-                <input type="file" id="diseaseImage" accept="image/*">
-                <span id="diseaseFileName"></span>
-                <img id="diseaseImagePreview" src="" alt="" style="display:none; max-width:100px;">
-                <button type="submit">حفظ</button>
+                <input type="hidden" id="diseaseId">
+                <input type="hidden" id="diseaseCategoryId">
+                
+                <div class="form-group">
+                    <label for="diseaseName">اسم المرض:</label>
+                    <input type="text" id="diseaseName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseScientificName">الاسم العلمي:</label>
+                    <input type="text" id="diseaseScientificName">
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseDescription">شرح عن المرض:</label>
+                    <textarea id="diseaseDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseSymptoms">الأعراض:</label>
+                    <textarea id="diseaseSymptoms" rows="3" placeholder="أهم الأعراض المصاحبة للمرض"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseDiagnosis">التشخيص:</label>
+                    <textarea id="diseaseDiagnosis" rows="3" placeholder="كيفية تشخيص المرض"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseTreatment">العلاج:</label>
+                    <textarea id="diseaseTreatment" rows="3" placeholder="العلاجات المقترحة للمرض"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseasePrevention">الوقاية:</label>
+                    <textarea id="diseasePrevention" rows="2" placeholder="طرق الوقاية من المرض"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diseaseImage">صورة توضيحية:</label>
+                    <div class="file-upload">
+                        <label for="diseaseImage" class="upload-btn">
+                            <i class="fas fa-upload"></i> اختر صورة
+                        </label>
+                        <input type="file" id="diseaseImage" accept="image/*">
+                        <span id="diseaseFileName"></span>
+                    </div>
+                    <div id="diseaseImagePreview" class="image-preview"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">حفظ المرض</button>
+                </div>
             </form>
         </div>
     </div>
