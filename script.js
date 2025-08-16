@@ -36,12 +36,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // بيانات التطبيق
     let appData = JSON.parse(localStorage.getItem('medicalAppData')) || {
-        groups: [],
-        diseasesCategories: [],
-        settings: {
-            theme: 'light'
-        }
-    };
+    groups: [],
+    diseasesCategories: [],
+    settings: {
+        theme: 'light'
+    }
+};
+const LZString = window.LZString;
 
     // تهيئة هيكل البيانات
     appData.groups = appData.groups.map(group => ({
@@ -126,27 +127,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // وظائف التطبيق
     function initApp() {
-        applyTheme(appData.settings.theme);
-        switchSection(currentSection);
-        renderGroups();
-        renderDiseasesCategories();
-        
-        if (appData.groups.length > 0) {
-            currentGroupId = appData.groups[0].id;
-            renderCategories(currentGroupId);
-            
-            const group = appData.groups.find(g => g.id === currentGroupId);
-            if (group && group.categories.length > 0) {
-                currentCategoryId = group.categories[0].id;
-                showMedicinesContent(currentGroupId, currentCategoryId);
-            }
+    // 1. محاولة قراءة البيانات من الرابط أولاً
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlData = urlParams.get('data');
+    
+    if (urlData) {
+        try {
+            appData = JSON.parse(LZString.decompressFromEncodedURIComponent(urlData));
+            alert('تم تحميل البيانات من الرابط بنجاح!');
+        } catch (e) {
+            console.error('خطأ في فك تشفير البيانات', e);
         }
+    } 
+    // 2. إذا لم يكن هناك بيانات في الرابط، اقرأ من localStorage
+    else {
+        const savedData = localStorage.getItem('medicalAppData');
+        if (savedData) appData = JSON.parse(savedData);
+    }
+    
+    // بقية الدالة كما هي...
+    applyTheme(appData.settings.theme);
+    switchSection(currentSection);
+    renderGroups();
+    renderDiseasesCategories();
+    
+    if (appData.groups.length > 0) {
+        currentGroupId = appData.groups[0].id;
+        renderCategories(currentGroupId);
         
-        if (appData.diseasesCategories.length > 0) {
-            currentDiseaseCategoryId = appData.diseasesCategories[0].id;
-            showDiseasesContent(currentDiseaseCategoryId);
+        const group = appData.groups.find(g => g.id === currentGroupId);
+        if (group && group.categories.length > 0) {
+            currentCategoryId = group.categories[0].id;
+            showMedicinesContent(currentGroupId, currentCategoryId);
         }
     }
+    
+    if (appData.diseasesCategories.length > 0) {
+        currentDiseaseCategoryId = appData.diseasesCategories[0].id;
+        showDiseasesContent(currentDiseaseCategoryId);
+    }
+    
+    // إعداد أزرار التصدير والاستيراد
+    document.getElementById('exportBtn').addEventListener('click', saveAsFile);
+    document.getElementById('importBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+    document.getElementById('fileInput').addEventListener('change', importFromFile);
+}
     
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
@@ -1069,7 +1096,52 @@ document.addEventListener('DOMContentLoaded', function() {
         currentEditingId = null;
     }
     
+    function copyShareLink() {
+    const input = document.getElementById('share-input');
+    input.select();
+    document.execCommand('copy');
+    alert('تم نسخ الرابط! يمكنك مشاركته الآن');
+}
+
+function saveAsFile() {
+    const data = JSON.stringify(appData);
+    const blob = new Blob([data], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'medical-data-' + new Date().toLocaleDateString() + '.json';
+    a.click();
+}
+
+function importFromFile(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            appData = JSON.parse(e.target.result);
+            saveData();
+            initApp();
+            alert('تم استيراد البيانات بنجاح!');
+        } catch (error) {
+            alert('خطأ في ملف البيانات: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+}
+    
     function saveData() {
-        localStorage.setItem('medicalAppData', JSON.stringify(appData));
-    }
-});
+    // 1. حفظ في localStorage
+    localStorage.setItem('medicalAppData', JSON.stringify(appData));
+    
+    // 2. إنشاء رابط قابل للمشاركة
+    const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(appData));
+    const shareableLink = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
+    
+    // 3. عرض الرابط للمستخدم
+    const shareDiv = document.getElementById('share-link');
+    shareDiv.innerHTML = `
+        <p>انسخ هذا الرابط لفتح بياناتك على أي جهاز:</p>
+        <input type="text" value="${shareableLink}" id="share-input" readonly>
+        <button class="btn primary small" onclick="copyShareLink()">نسخ الرابط</button>
+    `;
+                                                         }
