@@ -735,3 +735,31 @@ body {
         padding: 20px 15px;
     }
 }
+
+.share-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--light-color);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    z-index: 1000;
+    max-width: 90%;
+}
+
+.share-container p {
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+#share-input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--light-color);
+    color: var(--text-color);
+    }
