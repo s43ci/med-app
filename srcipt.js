@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const medicinesSearch = document.getElementById('medicinesSearch');
     const diseasesSearch = document.getElementById('diseasesSearch');
     
-    // بيانات التطبيق
-    let appData = JSON.parse(localStorage.getItem('medicalAppData')) || {
+// بيانات التطبيق
+let appData = JSON.parse(localStorage.getItem('medicalAppData')) || {
     groups: [],
     diseasesCategories: [],
     settings: {
@@ -1144,4 +1144,7 @@ function importFromFile(event) {
         <input type="text" value="${shareableLink}" id="share-input" readonly>
         <button class="btn primary small" onclick="copyShareLink()">نسخ الرابط</button>
     `;
-                                                         }
+}
+
+// Add this closing brace to end the DOMContentLoaded event listener
+});
