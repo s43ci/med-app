@@ -2,327 +2,2040 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مستعرض العلاجات والأمراض</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموقع الطبي المتطور</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2E7D32;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --hover-color: #e8f5e9;
+            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+            --sidebar-width: 300px;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #689F38;
+            --secondary-color: #33691E;
+            --text-color: #f5f5f5;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --hover-color: #2c2c2c;
+            --shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 60px);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .theme-toggle, .data-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .theme-toggle:hover, .data-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+            position: sticky;
+            top: 60px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+
+        .add-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .groups-container, .sections-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .group-card, .section-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .group-card:hover, .section-card:hover {
+            transform: translateY(-3px);
+            background: var(--hover-color);
+        }
+
+        .group-card.active, .section-card.active {
+            border-left: 4px solid var(--primary-color);
+            background: var(--hover-color);
+        }
+
+        .group-title, .section-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-actions, .section-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+
+        .action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .treatment-card, .disease-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+        }
+
+        .treatment-card:hover, .disease-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .treatment-header, .disease-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .treatment-title, .disease-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .treatment-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .treatment-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-left: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .treatment-details, .disease-details {
+            margin-top: 10px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-upload-btn {
+            background: var(--border-color);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-upload-btn:hover {
+            background: #ddd;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-left: none;
+                border-bottom: 1px solid var(--border-color);
+                position: static;
+            }
+
+            .main-content {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .data-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+
+            .tab {
+                padding: 10px 15px;
+            }
+
+            .items-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="header-content">
-                <h1><i class="fas fa-heartbeat"></i> مستعرض طبي</h1>
-                <div class="header-actions">
-    <button id="toggleTheme" class="btn icon-btn">
-        <i class="fas fa-moon"></i>
-    </button>
-    <button id="exportBtn" class="btn icon-btn" title="حفظ كملف">
-        <i class="fas fa-download"></i>
-    </button>
-    <button id="importBtn" class="btn icon-btn" title="استيراد ملف">
-        <i class="fas fa-upload"></i>
-        <input type="file" id="fileInput" accept=".json" style="display: none;">
-    </button>
-</div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            <span>الموقع الطبي المتطور</span>
+        </div>
+        <div class="data-actions">
+            <button class="data-btn" id="exportBtn">
+                <i class="fas fa-file-export"></i>
+                تصدير
+            </button>
+            <button class="data-btn" id="importBtn">
+                <i class="fas fa-file-import"></i>
+                استيراد
+            </button>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                الوضع الليلي
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="tabs">
+                <div class="tab active" data-tab="treatments">العلاجات <i class="fas fa-pills"></i></div>
+                <div class="tab" data-tab="diseases">الأمراض <i class="fas fa-stethoscope"></i></div>
             </div>
+
+            <div class="tab-content active" id="treatments-sidebar">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="treatmentSearchSidebar" placeholder="ابحث عن علاج...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="add-btn" id="addGroupBtn">
+                    <i class="fas fa-plus"></i>
+                    إضافة مجموعة جديدة
+                </button>
+                <div class="groups-container" id="groupsContainer"></div>
+            </div>
+
+            <div class="tab-content" id="diseases-sidebar">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="diseaseSearchSidebar" placeholder="ابحث عن مرض...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="add-btn" id="addDiseaseSectionBtn">
+                    <i class="fas fa-plus"></i>
+                    إضافة قسم جديد
+                </button>
+                <div class="sections-container" id="diseaseSectionsContainer"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tab-content active" id="treatments-main">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="treatmentSearchMain" placeholder="ابحث عن علاج...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div id="treatmentsContent">
+                    <div class="empty-state">
+                        <i class="fas fa-pills"></i>
+                        <p>اختر مجموعة أو قسماً من القائمة لبدء إدارة البيانات</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="diseases-main">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="diseaseSearchMain" placeholder="ابحث عن مرض...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div id="diseasesContent">
+                    <div class="empty-state">
+                        <i class="fas fa-stethoscope"></i>
+                        <p>اختر قسماً من القائمة لبدء إدارة البيانات</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="groupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="groupModalTitle">إضافة مجموعة جديدة</div>
+                <button class="close-modal" id="closeGroupModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="groupName">اسم المجموعة</label>
+                    <input type="text" class="form-input" id="groupName" placeholder="أدخل اسم المجموعة">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelGroupBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="saveGroupBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="sectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="sectionModalTitle">إضافة قسم جديد</div>
+                <button class="close-modal" id="closeSectionModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="sectionName">اسم القسم</label>
+                    <input type="text" class="form-input" id="sectionName" placeholder="أدخل اسم القسم">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelSectionBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="saveSectionBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="treatmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="treatmentModalTitle">إضافة علاج جديد</div>
+                <button class="close-modal" id="closeTreatmentModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="treatmentName">اسم العلاج</label>
+                    <input type="text" class="form-input" id="treatmentName" placeholder="أدخل اسم العلاج">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="treatmentScientificName">الاسم العلمي</label>
+                    <input type="text" class="form-input" id="treatmentScientificName" placeholder="أدخل الاسم العلمي">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="treatmentCommercialName">الاسم التجاري (اختياري)</label>
+                    <input type="text" class="form-input" id="treatmentCommercialName" placeholder="أدخل الاسم التجاري">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="treatmentDosage">الجرعة</label>
+                    <textarea class="form-textarea" id="treatmentDosage" placeholder="أدخل الجرعة الموصى بها"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="treatmentNotes">ملاحظات (اختياري)</label>
+                    <textarea class="form-textarea" id="treatmentNotes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">صورة العلاج (اختياري)</label>
+                    <input type="file" class="file-input" id="treatmentImageInput" accept="image/*">
+                    <label for="treatmentImageInput" class="image-upload-btn">
+                        <i class="fas fa-upload"></i> اختر صورة
+                    </label>
+                    <img id="treatmentImagePreview" class="image-preview" alt="معاينة الصورة">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelTreatmentBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="saveTreatmentBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="diseaseSectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="diseaseSectionModalTitle">إضافة قسم أمراض جديد</div>
+                <button class="close-modal" id="closeDiseaseSectionModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="diseaseSectionName">اسم القسم</label>
+                    <input type="text" class="form-input" id="diseaseSectionName" placeholder="أدخل اسم القسم">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelDiseaseSectionBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="saveDiseaseSectionBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="diseaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="diseaseModalTitle">إضافة مرض جديد</div>
+                <button class="close-modal" id="closeDiseaseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="diseaseName">اسم المرض</label>
+                    <input type="text" class="form-input" id="diseaseName" placeholder="أدخل اسم المرض">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="diseaseDiagnosis">التشخيص</label>
+                    <textarea class="form-textarea" id="diseaseDiagnosis" placeholder="أدخل طريقة التشخيص"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="diseaseTreatment">العلاج</label>
+                    <textarea class="form-textarea" id="diseaseTreatment" placeholder="أدخل العلاج الموصى به"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="diseaseSymptoms">الأعراض</label>
+                    <textarea class="form-textarea" id="diseaseSymptoms" placeholder="أدخل الأعراض الشائعة"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="diseaseNotes">ملاحظات (اختياري)</label>
+                    <textarea class="form-textarea" id="diseaseNotes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelDiseaseBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="saveDiseaseBtn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">استيراد البيانات</div>
+                <button class="close-modal" id="closeImportModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="importFile">اختر ملف JSON</label>
+                    <input type="file" class="file-input" id="importFile" accept=".json">
+                    <button class="btn btn-secondary" id="chooseFileBtn" style="width: 100%;">
+                        <i class="fas fa-folder-open"></i> اختر ملف
+                    </button>
+                    <div id="fileName" style="margin-top: 10px; text-align: center;"></div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelImportBtn">إلغاء</button>
+                    <button class="btn btn-primary" id="confirmImportBtn">استيراد</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const themeToggle = document.getElementById('themeToggle');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContentsSidebar = document.querySelectorAll('#treatments-sidebar, #diseases-sidebar');
+            const tabContentsMain = document.querySelectorAll('#treatments-main, #diseases-main');
+            const groupsContainer = document.getElementById('groupsContainer');
+            const diseaseSectionsContainer = document.getElementById('diseaseSectionsContainer');
+            const treatmentsContent = document.getElementById('treatmentsContent');
+            const diseasesContent = document.getElementById('diseasesContent');
             
-            <nav class="main-nav">
-                <button class="nav-btn active" data-section="medicines">
-                    <i class="fas fa-pills"></i> العلاجات
-                </button>
-                <button class="nav-btn" data-section="diseases">
-                    <i class="fas fa-disease"></i> الأمراض
-                </button>
-            </nav>
-        </header>
-
-        <div class="app-main">
-            <!-- قسم العلاجات -->
-            <section id="medicinesSection" class="content-section active">
-                <div class="sidebar">
-                    <div class="section-actions">
-                        <button id="addGroupBtn" class="btn primary small">
-                            <i class="fas fa-layer-group"></i> مجموعة جديدة
-                        </button>
-                        <button id="addCategoryBtn" class="btn primary small">
-                            <i class="fas fa-folder-plus"></i> قسم جديد
-                        </button>
-                    </div>
-                    
-                    <div class="search-box">
-                        <input type="text" id="medicinesSearch" placeholder="ابحث عن علاج...">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    
-                    <div class="groups-list">
-                        <!-- سيتم ملؤها بالجافاسكريبت -->
-                    </div>
-                </div>
-
-                <div class="content-area">
-                    <div id="medicinesWelcome" class="welcome-screen">
-                        <div class="welcome-content">
+            // Modals
+            const groupModal = document.getElementById('groupModal');
+            const sectionModal = document.getElementById('sectionModal');
+            const treatmentModal = document.getElementById('treatmentModal');
+            const diseaseSectionModal = document.getElementById('diseaseSectionModal');
+            const diseaseModal = document.getElementById('diseaseModal');
+            const importModal = document.getElementById('importModal');
+            
+            // Buttons
+            const addGroupBtn = document.getElementById('addGroupBtn');
+            const addDiseaseSectionBtn = document.getElementById('addDiseaseSectionBtn');
+            
+            // Search inputs
+            const treatmentSearchSidebar = document.getElementById('treatmentSearchSidebar');
+            const treatmentSearchMain = document.getElementById('treatmentSearchMain');
+            const diseaseSearchSidebar = document.getElementById('diseaseSearchSidebar');
+            const diseaseSearchMain = document.getElementById('diseaseSearchMain');
+            
+            // Image upload
+            const treatmentImageInput = document.getElementById('treatmentImageInput');
+            const treatmentImagePreview = document.getElementById('treatmentImagePreview');
+            
+            // Data
+            let appData = {
+                treatments: {
+                    groups: []
+                },
+                diseases: {
+                    sections: []
+                }
+            };
+            
+            // Current selected items
+            let currentGroupId = null;
+            let currentSectionId = null;
+            let currentDiseaseSectionId = null;
+            let isEditing = false;
+            let currentTreatmentImage = null;
+            
+            // Initialize the app
+            function init() {
+                loadData();
+                renderGroups();
+                renderDiseaseSections();
+                setupEventListeners();
+                checkThemePreference();
+            }
+            
+            // Set up event listeners
+            function setupEventListeners() {
+                // Theme toggle
+                themeToggle.addEventListener('click', toggleTheme);
+                
+                // Tabs
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tabContentsSidebar.forEach(c => c.classList.remove('active'));
+                        tabContentsMain.forEach(c => c.classList.remove('active'));
+                        
+                        tab.classList.add('active');
+                        const tabId = tab.getAttribute('data-tab');
+                        document.getElementById(`${tabId}-sidebar`).classList.add('active');
+                        document.getElementById(`${tabId}-main`).classList.add('active');
+                    });
+                });
+                
+                // Group modal
+                addGroupBtn.addEventListener('click', () => openGroupModal());
+                document.getElementById('closeGroupModal').addEventListener('click', () => closeGroupModal());
+                document.getElementById('cancelGroupBtn').addEventListener('click', () => closeGroupModal());
+                document.getElementById('saveGroupBtn').addEventListener('click', () => saveGroup());
+                
+                // Section modal
+                document.getElementById('closeSectionModal').addEventListener('click', () => closeSectionModal());
+                document.getElementById('cancelSectionBtn').addEventListener('click', () => closeSectionModal());
+                document.getElementById('saveSectionBtn').addEventListener('click', () => saveSection());
+                
+                // Treatment modal
+                document.getElementById('closeTreatmentModal').addEventListener('click', () => closeTreatmentModal());
+                document.getElementById('cancelTreatmentBtn').addEventListener('click', () => closeTreatmentModal());
+                document.getElementById('saveTreatmentBtn').addEventListener('click', () => saveTreatment());
+                
+                // Treatment image upload
+                treatmentImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            treatmentImagePreview.src = event.target.result;
+                            treatmentImagePreview.style.display = 'block';
+                            currentTreatmentImage = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                // Disease section modal
+                addDiseaseSectionBtn.addEventListener('click', () => openDiseaseSectionModal());
+                document.getElementById('closeDiseaseSectionModal').addEventListener('click', () => closeDiseaseSectionModal());
+                document.getElementById('cancelDiseaseSectionBtn').addEventListener('click', () => closeDiseaseSectionModal());
+                document.getElementById('saveDiseaseSectionBtn').addEventListener('click', () => saveDiseaseSection());
+                
+                // Disease modal
+                document.getElementById('closeDiseaseModal').addEventListener('click', () => closeDiseaseModal());
+                document.getElementById('cancelDiseaseBtn').addEventListener('click', () => closeDiseaseModal());
+                document.getElementById('saveDiseaseBtn').addEventListener('click', () => saveDisease());
+                
+                // Import/Export
+                document.getElementById('exportBtn').addEventListener('click', exportData);
+                document.getElementById('importBtn').addEventListener('click', () => importModal.style.display = 'flex');
+                document.getElementById('closeImportModal').addEventListener('click', () => importModal.style.display = 'none');
+                document.getElementById('cancelImportBtn').addEventListener('click', () => importModal.style.display = 'none');
+                document.getElementById('chooseFileBtn').addEventListener('click', () => document.getElementById('importFile').click());
+                document.getElementById('importFile').addEventListener('change', handleFileSelect);
+                document.getElementById('confirmImportBtn').addEventListener('click', importData);
+                
+                // Search
+                treatmentSearchSidebar.addEventListener('input', () => {
+                    treatmentSearchMain.value = treatmentSearchSidebar.value;
+                    filterTreatments(treatmentSearchSidebar.value);
+                });
+                
+                treatmentSearchMain.addEventListener('input', () => {
+                    treatmentSearchSidebar.value = treatmentSearchMain.value;
+                    filterTreatments(treatmentSearchMain.value);
+                });
+                
+                diseaseSearchSidebar.addEventListener('input', () => {
+                    diseaseSearchMain.value = diseaseSearchSidebar.value;
+                    filterDiseases(diseaseSearchSidebar.value);
+                });
+                
+                diseaseSearchMain.addEventListener('input', () => {
+                    diseaseSearchSidebar.value = diseaseSearchMain.value;
+                    filterDiseases(diseaseSearchMain.value);
+                });
+            }
+            
+            // Theme functions
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> الوضع الليلي';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع النهاري';
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            
+            function checkThemePreference() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع النهاري';
+                }
+            }
+            
+            // Group functions
+            function openGroupModal(group = null) {
+                const modalTitle = document.getElementById('groupModalTitle');
+                const groupNameInput = document.getElementById('groupName');
+                
+                if (group) {
+                    modalTitle.textContent = 'تعديل المجموعة';
+                    groupNameInput.value = group.name;
+                    currentGroupId = group.id;
+                    isEditing = true;
+                } else {
+                    modalTitle.textContent = 'إضافة مجموعة جديدة';
+                    groupNameInput.value = '';
+                    currentGroupId = null;
+                    isEditing = false;
+                }
+                
+                groupModal.style.display = 'flex';
+            }
+            
+            function closeGroupModal() {
+                groupModal.style.display = 'none';
+            }
+            
+            function saveGroup() {
+                const groupName = document.getElementById('groupName').value.trim();
+                
+                if (!groupName) {
+                    alert('الرجاء إدخال اسم المجموعة');
+                    return;
+                }
+                
+                if (isEditing) {
+                    // Update existing group
+                    const groupIndex = appData.treatments.groups.findIndex(g => g.id === currentGroupId);
+                    if (groupIndex !== -1) {
+                        appData.treatments.groups[groupIndex].name = groupName;
+                    }
+                } else {
+                    // Add new group
+                    const newGroup = {
+                        id: Date.now().toString(),
+                        name: groupName,
+                        sections: []
+                    };
+                    appData.treatments.groups.push(newGroup);
+                }
+                
+                saveData();
+                renderGroups();
+                closeGroupModal();
+            }
+            
+            function deleteGroup(groupId) {
+                if (confirm('هل أنت متأكد من حذف هذه المجموعة؟ سيتم حذف جميع الأقسام والعلاجات التابعة لها.')) {
+                    appData.treatments.groups = appData.treatments.groups.filter(g => g.id !== groupId);
+                    saveData();
+                    renderGroups();
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
                             <i class="fas fa-pills"></i>
-                            <h2>قسم العلاجات الطبية</h2>
-                            <p>اختر مجموعة أو قسمًا من القائمة الجانبية لبدء إدارة العلاجات</p>
+                            <p>اختر مجموعة أو قسماً من القائمة لبدء إدارة البيانات</p>
                         </div>
+                    `;
+                }
+            }
+            
+            function selectGroup(groupId) {
+                currentGroupId = groupId;
+                const group = appData.treatments.groups.find(g => g.id === groupId);
+                
+                // Update UI
+                document.querySelectorAll('.group-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                document.querySelector(`.group-card[data-id="${groupId}"]`).classList.add('active');
+                
+                // Render sections for this group
+                renderSections(groupId, group.sections);
+                
+                // Clear treatments view
+                treatmentsContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>اختر قسماً لعرض العلاجات</p>
                     </div>
-
-                    <div id="medicinesContent" class="category-content" style="display: none;">
-                        <div class="category-header">
-                            <div>
-                                <h2 id="currentCategoryTitle"></h2>
-                                <p id="currentGroupTitle" class="subtitle"></p>
+                `;
+            }
+            
+            // Section functions
+            function openSectionModal(groupId, section = null) {
+                const modalTitle = document.getElementById('sectionModalTitle');
+                const sectionNameInput = document.getElementById('sectionName');
+                
+                currentGroupId = groupId;
+                
+                if (section) {
+                    modalTitle.textContent = 'تعديل القسم';
+                    sectionNameInput.value = section.name;
+                    currentSectionId = section.id;
+                    isEditing = true;
+                } else {
+                    modalTitle.textContent = 'إضافة قسم جديد';
+                    sectionNameInput.value = '';
+                    currentSectionId = null;
+                    isEditing = false;
+                }
+                
+                sectionModal.style.display = 'flex';
+            }
+            
+            function closeSectionModal() {
+                sectionModal.style.display = 'none';
+            }
+            
+            function saveSection() {
+                const sectionName = document.getElementById('sectionName').value.trim();
+                
+                if (!sectionName) {
+                    alert('الرجاء إدخال اسم القسم');
+                    return;
+                }
+                
+                const group = appData.treatments.groups.find(g => g.id === currentGroupId);
+                if (!group) return;
+                
+                if (isEditing) {
+                    // Update existing section
+                    const sectionIndex = group.sections.findIndex(s => s.id === currentSectionId);
+                    if (sectionIndex !== -1) {
+                        group.sections[sectionIndex].name = sectionName;
+                    }
+                } else {
+                    // Add new section
+                    const newSection = {
+                        id: Date.now().toString(),
+                        name: sectionName,
+                        treatments: []
+                    };
+                    group.sections.push(newSection);
+                }
+                
+                saveData();
+                renderGroups();
+                renderSections(currentGroupId, group.sections);
+                closeSectionModal();
+            }
+            
+            function deleteSection(groupId, sectionId) {
+                if (confirm('هل أنت متأكد من حذف هذا القسم؟ سيتم حذف جميع العلاجات التابعة له.')) {
+                    const group = appData.treatments.groups.find(g => g.id === groupId);
+                    if (group) {
+                        group.sections = group.sections.filter(s => s.id !== sectionId);
+                        saveData();
+                        renderGroups();
+                        renderSections(groupId, group.sections);
+                        
+                        if (currentSectionId === sectionId) {
+                            treatmentsContent.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-folder-open"></i>
+                                    <p>اختر قسماً لعرض العلاجات</p>
+                                </div>
+                            `;
+                            currentSectionId = null;
+                        }
+                    }
+                }
+            }
+            
+            function selectSection(groupId, sectionId) {
+                currentGroupId = groupId;
+                currentSectionId = sectionId;
+                
+                const group = appData.treatments.groups.find(g => g.id === groupId);
+                if (!group) return;
+                
+                const section = group.sections.find(s => s.id === sectionId);
+                if (!section) return;
+                
+                // Update UI
+                document.querySelectorAll('.section-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                document.querySelector(`.section-card[data-id="${sectionId}"]`).classList.add('active');
+                
+                // Render treatments for this section
+                renderTreatments(section.treatments);
+            }
+            
+            // Treatment functions
+            function openTreatmentModal(groupId, sectionId, treatment = null) {
+                const modalTitle = document.getElementById('treatmentModalTitle');
+                const treatmentNameInput = document.getElementById('treatmentName');
+                const treatmentScientificNameInput = document.getElementById('treatmentScientificName');
+                const treatmentCommercialNameInput = document.getElementById('treatmentCommercialName');
+                const treatmentDosageInput = document.getElementById('treatmentDosage');
+                const treatmentNotesInput = document.getElementById('treatmentNotes');
+                
+                currentGroupId = groupId;
+                currentSectionId = sectionId;
+                
+                if (treatment) {
+                    modalTitle.textContent = 'تعديل العلاج';
+                    treatmentNameInput.value = treatment.name;
+                    treatmentScientificNameInput.value = treatment.scientificName || '';
+                    treatmentCommercialNameInput.value = treatment.commercialName || '';
+                    treatmentDosageInput.value = treatment.dosage || '';
+                    treatmentNotesInput.value = treatment.notes || '';
+                    
+                    if (treatment.image) {
+                        treatmentImagePreview.src = treatment.image;
+                        treatmentImagePreview.style.display = 'block';
+                        currentTreatmentImage = treatment.image;
+                    } else {
+                        treatmentImagePreview.style.display = 'none';
+                        currentTreatmentImage = null;
+                    }
+                    
+                    isEditing = true;
+                } else {
+                    modalTitle.textContent = 'إضافة علاج جديد';
+                    treatmentNameInput.value = '';
+                    treatmentScientificNameInput.value = '';
+                    treatmentCommercialNameInput.value = '';
+                    treatmentDosageInput.value = '';
+                    treatmentNotesInput.value = '';
+                    treatmentImagePreview.style.display = 'none';
+                    currentTreatmentImage = null;
+                    isEditing = false;
+                }
+                
+                treatmentModal.style.display = 'flex';
+            }
+            
+            function closeTreatmentModal() {
+                treatmentModal.style.display = 'none';
+            }
+            
+            function saveTreatment() {
+                const treatmentName = document.getElementById('treatmentName').value.trim();
+                const scientificName = document.getElementById('treatmentScientificName').value.trim();
+                const commercialName = document.getElementById('treatmentCommercialName').value.trim();
+                const dosage = document.getElementById('treatmentDosage').value.trim();
+                const notes = document.getElementById('treatmentNotes').value.trim();
+                
+                if (!treatmentName) {
+                    alert('الرجاء إدخال اسم العلاج');
+                    return;
+                }
+                
+                const group = appData.treatments.groups.find(g => g.id === currentGroupId);
+                if (!group) return;
+                
+                const section = group.sections.find(s => s.id === currentSectionId);
+                if (!section) return;
+                
+                if (isEditing) {
+                    // Find and update existing treatment
+                    // Note: In this simple implementation, we don't track treatment ID
+                    // So we can't properly edit treatments. This would need to be implemented.
+                    alert('تعديل العلاجات غير مدعوم في هذا الإصدار البسيط');
+                } else {
+                    // Add new treatment
+                    const newTreatment = {
+                        id: Date.now().toString(),
+                        name: treatmentName,
+                        scientificName: scientificName,
+                        commercialName: commercialName,
+                        dosage: dosage,
+                        notes: notes,
+                        image: currentTreatmentImage
+                    };
+                    section.treatments.push(newTreatment);
+                }
+                
+                saveData();
+                renderTreatments(section.treatments);
+                closeTreatmentModal();
+            }
+            
+            function deleteTreatment(treatmentId) {
+                if (confirm('هل أنت متأكد من حذف هذا العلاج؟')) {
+                    const group = appData.treatments.groups.find(g => g.id === currentGroupId);
+                    if (!group) return;
+                    
+                    const section = group.sections.find(s => s.id === currentSectionId);
+                    if (!section) return;
+                    
+                    section.treatments = section.treatments.filter(t => t.id !== treatmentId);
+                    saveData();
+                    renderTreatments(section.treatments);
+                }
+            }
+            
+            // Disease section functions
+            function openDiseaseSectionModal(section = null) {
+                const modalTitle = document.getElementById('diseaseSectionModalTitle');
+                const sectionNameInput = document.getElementById('diseaseSectionName');
+                
+                if (section) {
+                    modalTitle.textContent = 'تعديل قسم الأمراض';
+                    sectionNameInput.value = section.name;
+                    currentDiseaseSectionId = section.id;
+                    isEditing = true;
+                } else {
+                    modalTitle.textContent = 'إضافة قسم أمراض جديد';
+                    sectionNameInput.value = '';
+                    currentDiseaseSectionId = null;
+                    isEditing = false;
+                }
+                
+                diseaseSectionModal.style.display = 'flex';
+            }
+            
+            function closeDiseaseSectionModal() {
+                diseaseSectionModal.style.display = 'none';
+            }
+            
+            function saveDiseaseSection() {
+                const sectionName = document.getElementById('diseaseSectionName').value.trim();
+                
+                if (!sectionName) {
+                    alert('الرجاء إدخال اسم القسم');
+                    return;
+                }
+                
+                if (isEditing) {
+                    // Update existing section
+                    const sectionIndex = appData.diseases.sections.findIndex(s => s.id === currentDiseaseSectionId);
+                    if (sectionIndex !== -1) {
+                        appData.diseases.sections[sectionIndex].name = sectionName;
+                    }
+                } else {
+                    // Add new section
+                    const newSection = {
+                        id: Date.now().toString(),
+                        name: sectionName,
+                        diseases: []
+                    };
+                    appData.diseases.sections.push(newSection);
+                }
+                
+                saveData();
+                renderDiseaseSections();
+                closeDiseaseSectionModal();
+            }
+            
+            function deleteDiseaseSection(sectionId) {
+                if (confirm('هل أنت متأكد من حذف هذا القسم؟ سيتم حذف جميع الأمراض التابعة له.')) {
+                    appData.diseases.sections = appData.diseases.sections.filter(s => s.id !== sectionId);
+                    saveData();
+                    renderDiseaseSections();
+                    
+                    if (currentDiseaseSectionId === sectionId) {
+                        diseasesContent.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-stethoscope"></i>
+                                <p>اختر قسماً لعرض الأمراض</p>
                             </div>
-                            <button id="addMedicineBtn" class="btn primary">
-                                <i class="fas fa-plus-circle"></i> إضافة علاج
+                        `;
+                        currentDiseaseSectionId = null;
+                    }
+                }
+            }
+            
+            function selectDiseaseSection(sectionId) {
+                currentDiseaseSectionId = sectionId;
+                const section = appData.diseases.sections.find(s => s.id === sectionId);
+                
+                // Update UI
+                document.querySelectorAll('.section-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                document.querySelector(`.section-card[data-id="${sectionId}"]`).classList.add('active');
+                
+                // Render diseases for this section
+                renderDiseases(section.diseases);
+            }
+            
+            // Disease functions
+            function openDiseaseModal(sectionId, disease = null) {
+                const modalTitle = document.getElementById('diseaseModalTitle');
+                const diseaseNameInput = document.getElementById('diseaseName');
+                const diseaseDiagnosisInput = document.getElementById('diseaseDiagnosis');
+                const diseaseTreatmentInput = document.getElementById('diseaseTreatment');
+                const diseaseSymptomsInput = document.getElementById('diseaseSymptoms');
+                const diseaseNotesInput = document.getElementById('diseaseNotes');
+                
+                currentDiseaseSectionId = sectionId;
+                
+                if (disease) {
+                    modalTitle.textContent = 'تعديل المرض';
+                    diseaseNameInput.value = disease.name;
+                    diseaseDiagnosisInput.value = disease.diagnosis || '';
+                    diseaseTreatmentInput.value = disease.treatment || '';
+                    diseaseSymptomsInput.value = disease.symptoms || '';
+                    diseaseNotesInput.value = disease.notes || '';
+                    isEditing = true;
+                } else {
+                    modalTitle.textContent = 'إضافة مرض جديد';
+                    diseaseNameInput.value = '';
+                    diseaseDiagnosisInput.value = '';
+                    diseaseTreatmentInput.value = '';
+                    diseaseSymptomsInput.value = '';
+                    diseaseNotesInput.value = '';
+                    isEditing = false;
+                }
+                
+                diseaseModal.style.display = 'flex';
+            }
+            
+            function closeDiseaseModal() {
+                diseaseModal.style.display = 'none';
+            }
+            
+            function saveDisease() {
+                const diseaseName = document.getElementById('diseaseName').value.trim();
+                const diagnosis = document.getElementById('diseaseDiagnosis').value.trim();
+                const treatment = document.getElementById('diseaseTreatment').value.trim();
+                const symptoms = document.getElementById('diseaseSymptoms').value.trim();
+                const notes = document.getElementById('diseaseNotes').value.trim();
+                
+                if (!diseaseName) {
+                    alert('الرجاء إدخال اسم المرض');
+                    return;
+                }
+                
+                const section = appData.diseases.sections.find(s => s.id === currentDiseaseSectionId);
+                if (!section) return;
+                
+                if (isEditing) {
+                    // Find and update existing disease
+                    // Note: In this simple implementation, we don't track disease ID
+                    // So we can't properly edit diseases. This would need to be implemented.
+                    alert('تعديل الأمراض غير مدعوم في هذا الإصدار البسيط');
+                } else {
+                    // Add new disease
+                    const newDisease = {
+                        id: Date.now().toString(),
+                        name: diseaseName,
+                        diagnosis: diagnosis,
+                        treatment: treatment,
+                        symptoms: symptoms,
+                        notes: notes
+                    };
+                    section.diseases.push(newDisease);
+                }
+                
+                saveData();
+                renderDiseases(section.diseases);
+                closeDiseaseModal();
+            }
+            
+            function deleteDisease(diseaseId) {
+                if (confirm('هل أنت متأكد من حذف هذا المرض؟')) {
+                    const section = appData.diseases.sections.find(s => s.id === currentDiseaseSectionId);
+                    if (!section) return;
+                    
+                    section.diseases = section.diseases.filter(d => d.id !== diseaseId);
+                    saveData();
+                    renderDiseases(section.diseases);
+                }
+            }
+            
+            // Render functions
+            function renderGroups() {
+                groupsContainer.innerHTML = '';
+                
+                if (appData.treatments.groups.length === 0) {
+                    groupsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-pills"></i>
+                            <p>لا توجد مجموعات علاجية. اضغط على زر "إضافة مجموعة جديدة" لبدء الإضافة.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                appData.treatments.groups.forEach(group => {
+                    const groupCard = document.createElement('div');
+                    groupCard.className = 'group-card';
+                    groupCard.setAttribute('data-id', group.id);
+                    groupCard.innerHTML = `
+                        <div class="group-title">
+                            <i class="fas fa-folder"></i>
+                            ${group.name}
+                        </div>
+                        <div class="group-actions">
+                            <button class="action-btn" title="إضافة قسم" onclick="event.stopPropagation(); openSectionModal('${group.id}')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="action-btn" title="تعديل" onclick="event.stopPropagation(); openGroupModal(${JSON.stringify(group)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="حذف" onclick="event.stopPropagation(); deleteGroup('${group.id}')">
+                                <i class="fas fa-trash"></i>
                             </button>
                         </div>
-
-                        <div id="medicinesList" class="cards-grid">
-                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                    `;
+                    groupCard.addEventListener('click', () => selectGroup(group.id));
+                    groupsContainer.appendChild(groupCard);
+                });
+            }
+            
+            function renderSections(groupId, sections) {
+                // Find the group in the DOM
+                const groupCard = document.querySelector(`.group-card[data-id="${groupId}"]`);
+                if (!groupCard) return;
+                
+                // Check if we already have a sections container for this group
+                let sectionsContainer = groupCard.querySelector('.sections-container');
+                
+                if (!sectionsContainer) {
+                    // Create a new sections container
+                    sectionsContainer = document.createElement('div');
+                    sectionsContainer.className = 'sections-container';
+                    groupCard.appendChild(sectionsContainer);
+                } else {
+                    // Clear existing sections
+                    sectionsContainer.innerHTML = '';
+                }
+                
+                if (sections.length === 0) {
+                    sectionsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 10px; color: var(--text-color); opacity: 0.7;">
+                            لا توجد أقسام في هذه المجموعة
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم الأمراض -->
-            <section id="diseasesSection" class="content-section">
-                <div class="sidebar">
-                    <div class="section-actions">
-                        <button id="addDiseaseCategoryBtn" class="btn primary small">
-                            <i class="fas fa-folder-plus"></i> قسم جديد
-                        </button>
-                    </div>
-                    
-                    <div class="search-box">
-                        <input type="text" id="diseasesSearch" placeholder="ابحث عن مرض...">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    
-                    <div class="categories-list">
-                        <!-- سيتم ملؤها بالجافاسكريبت -->
-                    </div>
-                </div>
-
-                <div class="content-area">
-                    <div id="diseasesWelcome" class="welcome-screen">
-                        <div class="welcome-content">
+                    `;
+                    return;
+                }
+                
+                sections.forEach(section => {
+                    const sectionCard = document.createElement('div');
+                    sectionCard.className = 'section-card';
+                    sectionCard.setAttribute('data-id', section.id);
+                    sectionCard.innerHTML = `
+                        <div class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            ${section.name}
+                        </div>
+                        <div class="section-actions">
+                            <button class="action-btn" title="إضافة علاج" onclick="event.stopPropagation(); openTreatmentModal('${groupId}', '${section.id}')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="action-btn" title="تعديل" onclick="event.stopPropagation(); openSectionModal('${groupId}', ${JSON.stringify(section)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="حذف" onclick="event.stopPropagation(); deleteSection('${groupId}', '${section.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    sectionCard.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectSection(groupId, section.id);
+                    });
+                    sectionsContainer.appendChild(sectionCard);
+                });
+            }
+            
+            function renderTreatments(treatments) {
+                treatmentsContent.innerHTML = '';
+                
+                if (!currentSectionId) {
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>اختر قسماً لعرض العلاجات</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (treatments.length === 0) {
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-pills"></i>
+                            <p>لا توجد علاجات في هذا القسم</p>
+                            <button class="add-btn" onclick="openTreatmentModal('${currentGroupId}', '${currentSectionId}')">
+                                <i class="fas fa-plus"></i>
+                                إضافة علاج جديد
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const treatmentsHeader = document.createElement('div');
+                treatmentsHeader.style.display = 'flex';
+                treatmentsHeader.style.justifyContent = 'space-between';
+                treatmentsHeader.style.alignItems = 'center';
+                treatmentsHeader.style.marginBottom = '20px';
+                treatmentsHeader.innerHTML = `
+                    <h2>العلاجات</h2>
+                    <button class="add-btn" onclick="openTreatmentModal('${currentGroupId}', '${currentSectionId}')">
+                        <i class="fas fa-plus"></i>
+                        إضافة علاج جديد
+                    </button>
+                `;
+                treatmentsContent.appendChild(treatmentsHeader);
+                
+                const itemsContainer = document.createElement('div');
+                itemsContainer.className = 'items-container';
+                treatmentsContent.appendChild(itemsContainer);
+                
+                treatments.forEach(treatment => {
+                    const treatmentCard = document.createElement('div');
+                    treatmentCard.className = 'treatment-card';
+                    treatmentCard.innerHTML = `
+                        <div class="treatment-header">
+                            <div>
+                                <div class="treatment-title">${treatment.name}</div>
+                                ${treatment.scientificName ? `<div class="treatment-subtitle">${treatment.scientificName}</div>` : ''}
+                            </div>
+                            ${treatment.image ? `<img src="${treatment.image}" class="treatment-image" alt="${treatment.name}">` : ''}
+                        </div>
+                        <div class="treatment-details">
+                            ${treatment.commercialName ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الاسم التجاري:</div>
+                                    <div class="detail-value">${treatment.commercialName}</div>
+                                </div>
+                            ` : ''}
+                            ${treatment.dosage ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الجرعة:</div>
+                                    <div class="detail-value">${treatment.dosage}</div>
+                                </div>
+                            ` : ''}
+                            ${treatment.notes ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">ملاحظات:</div>
+                                    <div class="detail-value">${treatment.notes}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                            <button class="action-btn" title="تعديل" onclick="openTreatmentModal('${currentGroupId}', '${currentSectionId}', ${JSON.stringify(treatment)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="حذف" onclick="deleteTreatment('${treatment.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(treatmentCard);
+                });
+            }
+            
+            function renderDiseaseSections() {
+                diseaseSectionsContainer.innerHTML = '';
+                
+                if (appData.diseases.sections.length === 0) {
+                    diseaseSectionsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-stethoscope"></i>
+                            <p>لا توجد أقسام أمراض. اضغط على زر "إضافة قسم جديد" لبدء الإضافة.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                appData.diseases.sections.forEach(section => {
+                    const sectionCard = document.createElement('div');
+                    sectionCard.className = 'section-card';
+                    sectionCard.setAttribute('data-id', section.id);
+                    sectionCard.innerHTML = `
+                        <div class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            ${section.name}
+                        </div>
+                        <div class="section-actions">
+                            <button class="action-btn" title="إضافة مرض" onclick="event.stopPropagation(); openDiseaseModal('${section.id}')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="action-btn" title="تعديل" onclick="event.stopPropagation(); openDiseaseSectionModal(${JSON.stringify(section)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="حذف" onclick="event.stopPropagation(); deleteDiseaseSection('${section.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    sectionCard.addEventListener('click', () => selectDiseaseSection(section.id));
+                    diseaseSectionsContainer.appendChild(sectionCard);
+                });
+            }
+            
+            function renderDiseases(diseases) {
+                diseasesContent.innerHTML = '';
+                
+                if (!currentDiseaseSectionId) {
+                    diseasesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-stethoscope"></i>
+                            <p>اختر قسماً لعرض الأمراض</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (diseases.length === 0) {
+                    diseasesContent.innerHTML = `
+                        <div class="empty-state">
                             <i class="fas fa-disease"></i>
-                            <h2>قسم الأمراض الطبية</h2>
-                            <p>اختر قسمًا من القائمة الجانبية لبدء إدارة الأمراض</p>
-                        </div>
-                    </div>
-
-                    <div id="diseasesContent" class="category-content" style="display: none;">
-                        <div class="category-header">
-                            <h2 id="currentDiseaseCategoryTitle"></h2>
-                            <button id="addDiseaseBtn" class="btn primary">
-                                <i class="fas fa-plus-circle"></i> إضافة مرض
+                            <p>لا توجد أمراض في هذا القسم</p>
+                            <button class="add-btn" onclick="openDiseaseModal('${currentDiseaseSectionId}')">
+                                <i class="fas fa-plus"></i>
+                                إضافة مرض جديد
                             </button>
                         </div>
-
-                        <div id="diseasesList" class="cards-grid">
-                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                    `;
+                    return;
+                }
+                
+                const diseasesHeader = document.createElement('div');
+                diseasesHeader.style.display = 'flex';
+                diseasesHeader.style.justifyContent = 'space-between';
+                diseasesHeader.style.alignItems = 'center';
+                diseasesHeader.style.marginBottom = '20px';
+                diseasesHeader.innerHTML = `
+                    <h2>الأمراض</h2>
+                    <button class="add-btn" onclick="openDiseaseModal('${currentDiseaseSectionId}')">
+                        <i class="fas fa-plus"></i>
+                        إضافة مرض جديد
+                    </button>
+                `;
+                diseasesContent.appendChild(diseasesHeader);
+                
+                const itemsContainer = document.createElement('div');
+                itemsContainer.className = 'items-container';
+                diseasesContent.appendChild(itemsContainer);
+                
+                diseases.forEach(disease => {
+                    const diseaseCard = document.createElement('div');
+                    diseaseCard.className = 'disease-card';
+                    diseaseCard.innerHTML = `
+                        <div class="disease-header">
+                            <div class="disease-title">${disease.name}</div>
                         </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <!-- نوافذ منبثقة للعلاجات -->
-    <div id="groupModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="groupModalTitle">إضافة مجموعة جديدة</h2>
-            <form id="groupForm">
-                <input type="hidden" id="groupId">
-                <div class="form-group">
-                    <label for="groupName">اسم المجموعة:</label>
-                    <input type="text" id="groupName" required>
-                </div>
-                <button type="submit" class="btn primary">حفظ</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="categoryModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="categoryModalTitle">إضافة قسم جديد</h2>
-            <form id="categoryForm">
-                <input type="hidden" id="categoryId">
-                <div class="form-group">
-                    <label for="categoryGroup">المجموعة:</label>
-                    <select id="categoryGroup" required>
-                        <!-- سيتم ملؤها بالجافاسكريبت -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="categoryName">اسم القسم:</label>
-                    <input type="text" id="categoryName" required>
-                </div>
-                <button type="submit" class="btn primary">حفظ</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="medicineModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="medicineModalTitle">إضافة علاج جديد</h2>
-            <form id="medicineForm">
-                <input type="hidden" id="medicineId">
-                <input type="hidden" id="medicineCategoryId">
+                        <div class="disease-details">
+                            ${disease.diagnosis ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">التشخيص:</div>
+                                    <div class="detail-value">${disease.diagnosis}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.treatment ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">العلاج:</div>
+                                    <div class="detail-value">${disease.treatment}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.symptoms ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الأعراض:</div>
+                                    <div class="detail-value">${disease.symptoms}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.notes ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">ملاحظات:</div>
+                                    <div class="detail-value">${disease.notes}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                            <button class="action-btn" title="تعديل" onclick="openDiseaseModal('${currentDiseaseSectionId}', ${JSON.stringify(disease)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="حذف" onclick="deleteDisease('${disease.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(diseaseCard);
+                });
+            }
+            
+            // Filter functions
+            function filterTreatments(searchTerm) {
+                if (!searchTerm) {
+                    renderGroups();
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-pills"></i>
+                            <p>اختر مجموعة أو قسماً من القائمة لبدء إدارة البيانات</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="medicineTradeName">الاسم التجاري:</label>
-                        <input type="text" id="medicineTradeName" required>
-                    </div>
+                const filteredGroups = appData.treatments.groups.map(group => {
+                    const filteredSections = group.sections.map(section => {
+                        const filteredTreatments = section.treatments.filter(treatment => 
+                            treatment.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            (treatment.scientificName && treatment.scientificName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                            (treatment.commercialName && treatment.commercialName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                            (treatment.dosage && treatment.dosage.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                            (treatment.notes && treatment.notes.toLowerCase().includes(searchTerm.toLowerCase()))
+                        );
+                        return {...section, treatments: filteredTreatments};
+                    }).filter(section => section.treatments.length > 0);
                     
-                    <div class="form-group">
-                        <label for="medicineScientificName">المادة العلمية:</label>
-                        <input type="text" id="medicineScientificName" required>
-                    </div>
-                </div>
+                    return {...group, sections: filteredSections};
+                }).filter(group => group.sections.length > 0);
                 
-                <div class="form-group">
-                    <label for="medicineSpecs">المواصفات:</label>
-                    <textarea id="medicineSpecs" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="medicineContraindications">الموانع:</label>
-                    <textarea id="medicineContraindications" rows="3"></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="medicineDosage">الجرعة (الدُز):</label>
-                        <input type="text" id="medicineDosage" placeholder="مثال: مرتين يوميًا">
-                    </div>
+                if (filteredGroups.length === 0) {
+                    groupsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج تطابق "${searchTerm}"</p>
+                        </div>
+                    `;
                     
-                    <div class="form-group">
-                        <label for="medicineForm">شكل الدواء:</label>
-                        <select id="medicineForm">
-                            <option value="">اختر الشكل</option>
-                            <option value="حبوب">حبوب</option>
-                            <option value="شراب">شراب</option>
-                            <option value="حقن">حقن</option>
-                            <option value="مرهم">مرهم</option>
-                            <option value="تحاميل">تحاميل</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                </div>
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج تطابق "${searchTerm}"</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-group">
-                    <label for="medicineNotes">ملاحظات:</label>
-                    <textarea id="medicineNotes" rows="2" placeholder="ملاحظات مهمة عن العلاج"></textarea>
-                </div>
+                groupsContainer.innerHTML = '';
+                filteredGroups.forEach(group => {
+                    const groupCard = document.createElement('div');
+                    groupCard.className = 'group-card';
+                    groupCard.setAttribute('data-id', group.id);
+                    groupCard.innerHTML = `
+                        <div class="group-title">
+                            <i class="fas fa-folder"></i>
+                            ${group.name}
+                        </div>
+                    `;
+                    groupCard.addEventListener('click', () => selectGroup(group.id));
+                    groupsContainer.appendChild(groupCard);
+                    
+                    // Render sections for this group
+                    const sectionsContainer = document.createElement('div');
+                    sectionsContainer.className = 'sections-container';
+                    groupCard.appendChild(sectionsContainer);
+                    
+                    group.sections.forEach(section => {
+                        const sectionCard = document.createElement('div');
+                        sectionCard.className = 'section-card';
+                        sectionCard.setAttribute('data-id', section.id);
+                        sectionCard.innerHTML = `
+                            <div class="section-title">
+                                <i class="fas fa-folder-open"></i>
+                                ${section.name}
+                            </div>
+                        `;
+                        sectionCard.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            selectSection(group.id, section.id);
+                            
+                            // Render filtered treatments in main content
+                            renderFilteredTreatments(section.treatments);
+                        });
+                        sectionsContainer.appendChild(sectionCard);
+                    });
+                });
+            }
+            
+            function renderFilteredTreatments(treatments) {
+                treatmentsContent.innerHTML = '';
                 
-                <div class="form-group">
-                    <label for="medicineImage">صورة العلاج:</label>
-                    <div class="file-upload">
-                        <label for="medicineImage" class="upload-btn">
-                            <i class="fas fa-upload"></i> اختر صورة
-                        </label>
-                        <input type="file" id="medicineImage" accept="image/*">
-                        <span id="fileName"></span>
-                    </div>
-                    <div id="imagePreview" class="image-preview"></div>
-                </div>
+                if (treatments.length === 0) {
+                    treatmentsContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">حفظ العلاج</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- نوافذ منبثقة للأمراض -->
-    <div id="diseaseCategoryModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="diseaseCategoryModalTitle">إضافة قسم أمراض</h2>
-            <form id="diseaseCategoryForm">
-                <input type="hidden" id="diseaseCategoryId">
-                <div class="form-group">
-                    <label for="diseaseCategoryName">اسم القسم:</label>
-                    <input type="text" id="diseaseCategoryName" required>
-                </div>
-                <button type="submit" class="btn primary">حفظ</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="diseaseModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="diseaseModalTitle">إضافة مرض جديد</h2>
-            <form id="diseaseForm">
-                <input type="hidden" id="diseaseId">
-                <input type="hidden" id="diseaseCategoryId">
+                const itemsContainer = document.createElement('div');
+                itemsContainer.className = 'items-container';
+                treatmentsContent.appendChild(itemsContainer);
                 
-                <div class="form-group">
-                    <label for="diseaseName">اسم المرض:</label>
-                    <input type="text" id="diseaseName" required>
-                </div>
+                treatments.forEach(treatment => {
+                    const treatmentCard = document.createElement('div');
+                    treatmentCard.className = 'treatment-card';
+                    treatmentCard.innerHTML = `
+                        <div class="treatment-header">
+                            <div>
+                                <div class="treatment-title">${treatment.name}</div>
+                                ${treatment.scientificName ? `<div class="treatment-subtitle">${treatment.scientificName}</div>` : ''}
+                            </div>
+                            ${treatment.image ? `<img src="${treatment.image}" class="treatment-image" alt="${treatment.name}">` : ''}
+                        </div>
+                        <div class="treatment-details">
+                            ${treatment.commercialName ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الاسم التجاري:</div>
+                                    <div class="detail-value">${treatment.commercialName}</div>
+                                </div>
+                            ` : ''}
+                            ${treatment.dosage ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الجرعة:</div>
+                                    <div class="detail-value">${treatment.dosage}</div>
+                                </div>
+                            ` : ''}
+                            ${treatment.notes ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">ملاحظات:</div>
+                                    <div class="detail-value">${treatment.notes}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    itemsContainer.appendChild(treatmentCard);
+                });
+            }
+            
+            function filterDiseases(searchTerm) {
+                if (!searchTerm) {
+                    renderDiseaseSections();
+                    diseasesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-stethoscope"></i>
+                            <p>اختر قسماً من القائمة لبدء إدارة البيانات</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-group">
-                    <label for="diseaseScientificName">الاسم العلمي:</label>
-                    <input type="text" id="diseaseScientificName">
-                </div>
+                const filteredSections = appData.diseases.sections.map(section => {
+                    const filteredDiseases = section.diseases.filter(disease => 
+                        disease.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        (disease.diagnosis && disease.diagnosis.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (disease.treatment && disease.treatment.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (disease.symptoms && disease.symptoms.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (disease.notes && disease.notes.toLowerCase().includes(searchTerm.toLowerCase()))
+                    );
+                    return {...section, diseases: filteredDiseases};
+                }).filter(section => section.diseases.length > 0);
                 
-                <div class="form-group">
-                    <label for="diseaseDescription">شرح عن المرض:</label>
-                    <textarea id="diseaseDescription" rows="3"></textarea>
-                </div>
+                if (filteredSections.length === 0) {
+                    diseaseSectionsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج تطابق "${searchTerm}"</p>
+                        </div>
+                    `;
+                    
+                    diseasesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج تطابق "${searchTerm}"</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-group">
-                    <label for="diseaseSymptoms">الأعراض:</label>
-                    <textarea id="diseaseSymptoms" rows="3" placeholder="أهم الأعراض المصاحبة للمرض"></textarea>
-                </div>
+                diseaseSectionsContainer.innerHTML = '';
+                filteredSections.forEach(section => {
+                    const sectionCard = document.createElement('div');
+                    sectionCard.className = 'section-card';
+                    sectionCard.setAttribute('data-id', section.id);
+                    sectionCard.innerHTML = `
+                        <div class="section-title">
+                            <i class="fas fa-folder-open"></i>
+                            ${section.name}
+                        </div>
+                    `;
+                    sectionCard.addEventListener('click', () => {
+                        selectDiseaseSection(section.id);
+                        renderFilteredDiseases(section.diseases);
+                    });
+                    diseaseSectionsContainer.appendChild(sectionCard);
+                });
+            }
+            
+            function renderFilteredDiseases(diseases) {
+                diseasesContent.innerHTML = '';
                 
-                <div class="form-group">
-                    <label for="diseaseDiagnosis">التشخيص:</label>
-                    <textarea id="diseaseDiagnosis" rows="3" placeholder="كيفية تشخيص المرض"></textarea>
-                </div>
+                if (diseases.length === 0) {
+                    diseasesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>لا توجد نتائج</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                <div class="form-group">
-                    <label for="diseaseTreatment">العلاج:</label>
-                    <textarea id="diseaseTreatment" rows="3" placeholder="العلاجات المقترحة للمرض"></textarea>
-                </div>
+                const itemsContainer = document.createElement('div');
+                itemsContainer.className = 'items-container';
+                diseasesContent.appendChild(itemsContainer);
                 
-                <div class="form-group">
-                    <label for="diseasePrevention">الوقاية:</label>
-                    <textarea id="diseasePrevention" rows="2" placeholder="طرق الوقاية من المرض"></textarea>
-                </div>
+                diseases.forEach(disease => {
+                    const diseaseCard = document.createElement('div');
+                    diseaseCard.className = 'disease-card';
+                    diseaseCard.innerHTML = `
+                        <div class="disease-header">
+                            <div class="disease-title">${disease.name}</div>
+                        </div>
+                        <div class="disease-details">
+                            ${disease.diagnosis ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">التشخيص:</div>
+                                    <div class="detail-value">${disease.diagnosis}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.treatment ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">العلاج:</div>
+                                    <div class="detail-value">${disease.treatment}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.symptoms ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">الأعراض:</div>
+                                    <div class="detail-value">${disease.symptoms}</div>
+                                </div>
+                            ` : ''}
+                            ${disease.notes ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">ملاحظات:</div>
+                                    <div class="detail-value">${disease.notes}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    itemsContainer.appendChild(diseaseCard);
+                });
+            }
+            
+            // Data persistence
+            function saveData() {
+                localStorage.setItem('medicalAppData', JSON.stringify(appData));
+            }
+            
+            function loadData() {
+                const savedData = localStorage.getItem('medicalAppData');
+                if (savedData) {
+                    appData = JSON.parse(savedData);
+                }
+            }
+            
+            function exportData() {
+                const dataStr = JSON.stringify(appData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
                 
-                <div class="form-group">
-                    <label for="diseaseImage">صورة توضيحية:</label>
-                    <div class="file-upload">
-                        <label for="diseaseImage" class="upload-btn">
-                            <i class="fas fa-upload"></i> اختر صورة
-                        </label>
-                        <input type="file" id="diseaseImage" accept="image/*">
-                        <span id="diseaseFileName"></span>
-                    </div>
-                    <div id="diseaseImagePreview" class="image-preview"></div>
-                </div>
+                const exportFileDefaultName = 'medical-app-data.json';
                 
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">حفظ المرض</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-    <div id="share-link" class="share-container"></div>
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+            
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    document.getElementById('fileName').textContent = file.name;
+                }
+            }
+            
+            function importData() {
+                const fileInput = document.getElementById('importFile');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('الرجاء اختيار ملف لاستيراده');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.treatments && importedData.diseases) {
+                            if (confirm('هل أنت متأكد من استيراد البيانات؟ سيتم استبدال جميع البيانات الحالية.')) {
+                                appData = importedData;
+                                saveData();
+                                renderGroups();
+                                renderDiseaseSections();
+                                importModal.style.display = 'none';
+                                fileInput.value = '';
+                                document.getElementById('fileName').textContent = '';
+                                alert('تم استيراد البيانات بنجاح');
+                            }
+                        } else {
+                            alert('الملف غير صالح. يرجى التأكد من أن الملف يحتوي على بيانات التطبيق الطبي.');
+                        }
+                    } catch (error) {
+                        alert('حدث خطأ أثناء قراءة الملف. يرجى التأكد من أن الملف صالح.');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+            
+            // Make functions available globally for HTML onclick attributes
+            window.openGroupModal = openGroupModal;
+            window.openSectionModal = openSectionModal;
+            window.openTreatmentModal = openTreatmentModal;
+            window.openDiseaseSectionModal = openDiseaseSectionModal;
+            window.openDiseaseModal = openDiseaseModal;
+            window.deleteGroup = deleteGroup;
+            window.deleteSection = deleteSection;
+            window.deleteTreatment = deleteTreatment;
+            window.deleteDiseaseSection = deleteDiseaseSection;
+            window.deleteDisease = deleteDisease;
+            
+            // Initialize the app
+            init();
+        });
+    </script>
 </body>
 </html>
